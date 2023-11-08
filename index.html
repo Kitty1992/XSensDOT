@@ -1,0 +1,189 @@
+<!--
+  Copyright (c) 2003-2020 Xsens Technologies B.V. or subsidiaries worldwide.
+  All rights reserved.
+  
+  Redistribution and use in source and binary forms, with or without modification,
+  are permitted provided that the following conditions are met:
+  
+  1.      Redistributions of source code must retain the above copyright notice,
+           this list of conditions, and the following disclaimer.
+  
+  2.      Redistributions in binary form must reproduce the above copyright notice,
+           this list of conditions, and the following disclaimer in the documentation
+           and/or other materials provided with the distribution.
+  
+  3.      Neither the names of the copyright holders nor the names of their contributors
+           may be used to endorse or promote products derived from this software without
+           specific prior written permission.
+  
+  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY
+  EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+  MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
+  THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+  SPECIAL, EXEMPLARY OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT 
+  OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+  HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY OR
+  TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.THE LAWS OF THE NETHERLANDS 
+  SHALL BE EXCLUSIVELY APPLICABLE AND ANY DISPUTES SHALL BE FINALLY SETTLED UNDER THE RULES 
+  OF ARBITRATION OF THE INTERNATIONAL CHAMBER OF COMMERCE IN THE HAGUE BY ONE OR MORE 
+  ARBITRATORS APPOINTED IN ACCORDANCE WITH SAID RULES.  
+-->
+
+<!doctype html>
+<html>
+	<head>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <title>Xsens DOT with Node.js</title>
+        <link rel="stylesheet" type="text/css" href="bootstrap.3.3.7.min.css"/>
+        <link rel="stylesheet" type="text/css" href="main.css" media="all"/>
+        <link rel="icon" href="images/favicon.ico">
+        <script src="socket.io/socket.io.js"></script>
+        <script src="communication.js"></script>
+
+        <style>th:not(:last-child), td:not(:last-child) { border-right: 2px solid #000; }</style>
+	</head>
+
+  <body>
+
+    <img src="Xsens_DOT_Logo.png" width="500px" class="centerImg" style="padding-top: 2em;" />
+    <hr>
+
+    <div width="600px" align="center">
+        <div class="rowContainer">
+        
+          <div id="scanHeaderLeftGroup" class="leftGroup" style="position: relative;">
+            <button id="scanAllPortsButton" class="actionButton" style="position: absolute; left: 0px;" onclick="scanAllPortsButtonClicked()">Scan All Ports</button>
+          </div>
+
+        <div id="scanHeaderMiddleGroup" class="middleGroup"></div>
+
+        <div id="scanHeaderRightGroup" class="rightGroup" style="position: relative;">
+            <img id="settingsButton" src="ic_settings.png" onclick="settingsButtonClicked()" width="28px" height="28px" style="position: absolute; right: 148px; top: 4px;" />
+            <button id="exportButton" class="actionButton" style="position: absolute; right: 0px;" disabled onclick="exportButtonClicked()">Export</button>
+        </div>
+
+        <div id="exportHeaderMiddleGroup" class="middleGroup" hidden>
+
+          <div class="progress progress-striped" style="margin-top: 8px;">
+            <div id="exportProgressBar" class="progress-bar progress-bar-warning" role="progressbar"
+                 aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"
+                 style="width: 30%;">
+                <span class="sr-only">30%</span>
+            </div>
+          </div>
+
+        </div>
+
+        <div id="exportHeaderRightGroup" class="rightGroup" style="position: relative;" hidden>
+          <button id="stopExportingButton" class="actionButton" style="position: absolute; right: 0px;" onclick="stopExportingButtonClicked()">Stop</button>
+        </div>
+
+      </div>
+    </div>
+
+    <div width="600px" valign="top" align="center">
+      <div id="discoveredSensors" style="font-size:14px;"></div>
+      <div id="tipMain" style="width: 600px; font-size:14px; font-style: italic; color: #AFAFAF; text-align: left; margin-top: 8px;" hidden>Limited functions in the app will be provided when exporting or clearing data in data exporter.</div>
+      <div id="exportingSensors" style="font-size:14px;" hidden></div>
+      <div id="tipDataExporting" style="width: 600px; font-size:14px; font-style: italic; color: #AFAFAF; text-align: left; margin-top: 8px;" hidden>Recording data will NOT be cleared after exporting.</div>
+      <div id="dataExportedDir" style="width: 600px; font-size:14px; font-style: italic; color: #AFAFAF; text-align: left; margin-top: 8px;" hidden></div>
+      <div id="downloadAllContainer" style="width: 600px; margin-top: 12px; margin-bottom: 60px; position: relative;" hidden>
+        <button id="downloadAllButton" class="actionButton" style="position: absolute; right: 0px;" onclick="downloadAllButtonClicked()">Download All</button>
+      </div>
+    </div>
+    <hr>
+
+    <dialog id="exportConfigurationDialog" class="siteDialog">
+      <header class="dialogHeader">
+        <div style="display: flex; position: relative;">
+          <h1 style="margin: auto; position: absolute; left: 0px; float: left;">Export Configuration</h1>
+          <h1 style="margin: auto; position: absolute; right: 0px; float: right;" id="selectedDatabytes">40 bytes</h1>
+        </div>
+      </header>
+
+      <div class="dialogContent" style="position: relative">
+        <div style="font-weight: bold;">Sensor Fusion Data</div>
+
+        <div class="dialogRowContent">
+          <input type="checkbox" id="eulerAngles" value="1" checked onchange="onSensorFusionDataChange(this, this.value)"> Euler angles 
+          <input type="checkbox" id="quaternion" value="2" onchange="onSensorFusionDataChange(this, this.value)" style="margin-left: 62px;"> Quaternion <br>
+        </div>
+
+        <hr>
+
+        <div style="font-weight: bold;">Inertial Data</div>
+
+        <div class="dialogRowContent">
+            <input type="checkbox" id="angularVelocity" value="11" checked onchange="onInertialDataChange(this, this.value)"> Angular velocity 
+            <input type="checkbox" id="acceleration" value="12" checked onchange="onInertialDataChange(this, this.value)" style="margin-left: 35px;"> Acceleration <br>
+        </div>
+
+        <div class="dialogRowContent">
+          <input type="checkbox" id="dq" value="13" onchange="onInertialDataChange(this, this.value)"> dq 
+          <input type="checkbox" id="dv" value="14" onchange="onInertialDataChange(this, this.value)" style="margin-left: 136px;"> dv <br>
+        </div>
+
+        <hr>
+
+        <div class="dialogRowContent">
+          <input type="checkbox" id="magneticField" value="15" onchange="onInertialDataChange(this, this.value)"> Magnetic field 
+          <input type="checkbox" id="status" value="16" onchange="onInertialDataChange(this, this.value)" style="margin-left: 48px;"> Status <br>
+        </div>
+
+        <div style="height: 32px;"></div>
+
+        <button class="actionButton" disabled id="setAsDefault" onclick="setToDefaultSettings()" style="margin: 8px; position: absolute; right: 16px; bottom: 0px; float: right;">Set to Default</button>
+
+      </div>
+
+      <div class="width: 100%; position: relative;">
+        <div style="width: 50%; margin: 8px; position: absolute; left: 16px; float: left; text-align: left;">
+          <button class="actionButton" id="cancel" onclick="cancelSettingsDialog()" style="margin: auto;">CANCEL</button>
+        </div>
+
+        <div style="width: 50%; margin: 8px; position: absolute; right: 16px; float: right; text-align: right;">
+          <button class="actionButton" id="confirm" onclick="confirmSettingsDialog()">CONFIRM</button>
+        </div>
+
+        <div style="height: 52px;"></div>
+      </div>
+
+    </dialog>
+
+
+    <dialog id="selectRecordingFilesDialog" class="siteDialog">
+      <header class="dialogHeader">
+        <div style="display: flex; position: relative;">
+          <h1 style="margin: auto; position: absolute; left: 0px; float: left;">Xsens DOT</h1>
+          <h1 style="margin: auto; position: absolute; right: 0px; float: right;" id="selectAllFilesButton" onclick="onSelectAllFiles()">Select All</h1>
+        </div>
+      </header>
+
+      <div class="dialogContent" style="position: relative">
+
+        <div width="100%" valign="top">
+          <div id="recordingFileList" style="max-height: 400px; overflow-y: auto;"></div>
+        </div>
+
+        <div style="height: 32px;"></div>
+
+      </div>
+
+      <div class="width: 100%; position: relative;">
+        <div style="width: 50%; margin: 8px; position: absolute; left: 16px; float: left; text-align: left;">
+          <button class="actionButton" id="cancelSelectRecordingFiles" onclick="cancelSelectRecordingFilesDialog()" style="margin: auto;">CANCEL</button>
+        </div>
+
+        <div style="width: 50%; margin: 8px; position: absolute; right: 16px; float: right; text-align: right;">
+          <button class="actionButton" id="confirmSelectRecordingFiles" onclick="confirmSelectRecordingFilesDialog()">CONFIRM</button>
+        </div>
+
+        <div style="height: 52px;"></div>
+      </div>
+
+    </dialog>
+
+	</body>
+</html>

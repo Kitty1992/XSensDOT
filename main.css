@@ -1,0 +1,140 @@
+@font-face
+{
+    font-family: 'Montserrat';
+    font-style: normal;
+    font-weight: 400;
+    src: local('Montserrat Regular'), local('Montserrat-Regular'),
+    url('/montserrat-v14-latin-regular.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
+    url('/montserrat-v14-latin-regular.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+}
+
+body
+{
+    font: 14px 'Montserrat';
+    background-color: #43425D;
+}
+
+body, html
+{
+    -webkit-user-select: text;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -moz-user-select: text;
+    -ms-user-select: text;
+    user-select: text;
+    margin: 10;
+    height: 100%;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: none;
+    touch-action: none;
+}
+
+.actionButton
+{
+    width: 140px;
+    height: 34px;
+    outline: none;
+    border: 0px solid #0043425D;
+    border-radius: 4px;
+    opacity: 1;
+    text-align: center;
+    font: 12px 'Montserrat';
+    letter-spacing: 0;
+    color: #EA6852;
+    font-weight: bold;
+    opacity: 1;
+}
+
+.actionButton:hover 
+{
+    background: #EA6852 0% 0% no-repeat padding-box;
+    border-radius: 4px;
+    opacity: 1;
+    color: #ffffff;
+}
+
+.actionButton:disabled
+{
+    border: 2px solid #43425D;
+    color: #43425D;
+    opacity: 0.2;
+}
+
+.centerImg
+{
+    width: 640px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 1em;
+    margin-bottom: 1em;
+
+}
+
+.rowContainer
+{
+    width: 600px;
+    height: 36px;
+    display: flex;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 12px;
+    margin-bottom: 12px;
+}
+
+.leftGroup, .rightGroup
+{
+    width: 200px;
+    background-color: #00000000;
+    text-align: center;
+}
+
+.middleGroup
+{
+    flex: 1;
+    background-color: #00000000;
+    text-align: center;
+}
+
+.siteDialog 
+{
+    overflow: hidden;
+    width: 95%;
+    max-width: 500px;
+    padding: 0;
+    border-width: 0;
+    border-radius: 5px;
+    color: #303030;
+    background: #AAAAAA;
+    box-shadow: 0 10px 20px 0 rgba(0, 0, 0, .3);
+}
+
+.siteDialog h1 
+{
+    font-size: 16px;
+    font-weight: normal;
+    margin: 0;
+    color: #fff;
+}
+
+.siteDialog .dialogHeader 
+{
+    height: 42px;
+    padding: 12px 20px;
+    background-color: #EA6852;
+}
+
+.siteDialog .dialogContent 
+{
+    padding: 10px 20px;
+    color: #303030;
+    background-color: #fff;
+}
+
+.siteDialog .dialogRowContent
+{
+    color: #303030;
+    font-size: 15px;
+    margin-top: 16px;
+    margin-bottom: 16px;
+}

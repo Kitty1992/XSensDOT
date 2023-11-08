@@ -1,0 +1,27 @@
+{
+  "name": "Xsens_DOT_Data_Exporter-v2021.0.0.",
+  "version": "2021.0.0",
+  "description": "Stand-alone Recording Exporter",
+  "main": "recordingExporter.js",
+  "bin": "./recordingExporter.js",
+  "author": "Xsens",
+  "dependencies": {
+    "serialport": "9.0.0",
+    "@serialport/bindings": "9.0.0",
+    "express": "^4.17.1",
+    "ip": "^1.1.5",
+    "socket.io": "^2.3.0",
+    "node-resourcehacker": "1.2.1"
+  },
+  "pkg": {
+    "assets": [
+      "index.html",
+      "communication.js",
+      "main.css",
+      "bootstrap.3.3.7.min.css",
+      "bootstrap.min.css.map",
+      "fonts/**/*",
+      "images/**/*"
+    ]
+  }
+}
